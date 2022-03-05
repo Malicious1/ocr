@@ -1,5 +1,3 @@
-from pydantic import Field, BaseModel
-from typing import List
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.responses import RedirectResponse
 from pytesseract import TesseractError
@@ -8,25 +6,7 @@ import base64
 import io
 
 from app.ocr_engine import OCREngine
-
-
-class OCRRequest(BaseModel):
-    id: str = Field(title="External ID. For tracking. Response will be returned with the same ID")
-    language: str = Field("pol", title="Language of OCR, see /languages for available languages")
-    image: bytes = Field(title="Base64 encoded image string")
-
-
-class LanguagesResponse(BaseModel):
-    languages: List[str] = Field(title="Available languages")
-
-
-class OCRResponse(BaseModel):
-    id: str = Field(title="External ID, the same as in the corresponding request")
-    text: str = Field(title="Text extracted from the image")
-
-
-class OCRFileTestResponse(BaseModel):
-    text: str
+from app.rest_models import OCRRequest, OCRResponse, LanguagesResponse, OCRFileTestResponse
 
 
 app = FastAPI(title="OCRApp")
@@ -55,13 +35,13 @@ def ocr(request: OCRRequest):
     return OCRResponse(id=request.id, text=text)
 
 
-@app.post("/ocr/test_file", response_model=OCRResponse)
+@app.post("/ocr/test_file", response_model=OCRFileTestResponse)
 def ocr_test_file(file: UploadFile):
     image_bytes = file.file.read()
     image_bytes = io.BytesIO(image_bytes)
     image = Image.open(image_bytes)
     text = ocr_engine.get_text(image, "pol")
-    return OCRResponse(id="some_id", text=text)
+    return OCRFileTestResponse(text=text)
 
 
 @app.get("/languages", response_model=LanguagesResponse)
