@@ -1,0 +1,6 @@
+Pillow==9.0.1
+pydantic==1.9.0
+fastapi==0.74.1
+uvicorn[standard]==0.17.5
+pytesseract==0.3.9
+python-multipart==0.0.5
