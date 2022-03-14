@@ -16,7 +16,7 @@ def jaccard_similarity(tokens1 : list, tokens2 : list) -> float:
     Returns:
         float: Jaccard score value
     """
-    a = set(tokens1) 
+    a = set(tokens1)
     b = set(tokens2)
     c = a.intersection(b)
     return float(len(c)) / (len(a) + len(b) - len(c))

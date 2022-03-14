@@ -1,10 +1,11 @@
 # NLP module of OCR app
 import re
+import string
 import simplemma
 
 def remove_non_alphanum(text : str) -> str:
     "remove non alphanumeric characters from a string"
-    return re.sub(r'[^a-zA-Z0-9] ', '', text)
+    return text.translate(str.maketrans('', '', string.punctuation))
 
 def simple_tokenizer(text : str, languages = ['pl', 'en', 'ru', 'uk']) -> list:
     """Simple tokenizer

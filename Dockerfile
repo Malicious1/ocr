@@ -9,8 +9,8 @@ WORKDIR /code
 COPY requirements.txt .
 COPY setup.py .
 COPY ./app /code/app
-COPY app/tests/images /code/images
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+COPY app/evaluation/images /code/images
+RUN pip install --upgrade -r /code/requirements.txt
 RUN pip install /code/
 RUN export TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata/
 #CMD ["uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8000"]
