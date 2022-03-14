@@ -23,14 +23,16 @@ def jaccard_similarity(tokens1 : list, tokens2 : list) -> float:
 
 
 def evaluate_ocr(ocr : Callable, evaluation_data : dict,
-                 metric : Callable[list, list] = jaccard_similarity,
+                 metric : Callable[[list, list], float] = jaccard_similarity,
+                 tokenizer: Callable[[str], list] = simple_tokenizer,
                  silent = True) -> dict:
     """Perform evaluation of OCR according to the specified metric.
 
     Args:
         ocr (OCREngine): ocr function
         evaluation_data (dict): dictionary with pairs (image path, text)
-        metric (Callable) : function with metric score (needs to accept string tokens)
+        metric (Callable[[list, list], float]) : function with metric score (needs to accept string tokens)
+        tokenizer (Callable[[str], list]) : function that for str returns list of tokens
         silent (bool) flag that says whether output should be printed for individual scores
 
     Returns:
@@ -40,9 +42,9 @@ def evaluate_ocr(ocr : Callable, evaluation_data : dict,
     for img_path, text in evaluation_data.items():
         with Image.open(img_path) as img:
             ocr_text = ocr(img)
-        ocr_tokens = simple_tokenizer(ocr_text)
-        ref_tokens = simple_tokenizer(text)
-        sc_ = jaccard_similarity(ocr_tokens, ref_tokens)
+        ocr_tokens = tokenizer(ocr_text)
+        ref_tokens = tokenizer(text)
+        sc_ = metric(ocr_tokens, ref_tokens)
         scores[img_path] = sc_
         if not silent:
             print('>>>', img_path)
