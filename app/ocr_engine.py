@@ -9,7 +9,8 @@ class OCREngine:
 
     @staticmethod
     def get_text(image: Image, language: str) -> str:
-        image = cv2.bilateralFilter(np.asarray(image), 5, 55, 60)
+        image = cv2.cvtColor(np.array(image), cv2.COLOR_BGRA2BGR) # to handle both png/jpeg
+        image = cv2.bilateralFilter(image, 5, 55, 60)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         _, image = cv2.threshold(image, 240, 255, 1)
         return pytesseract.image_to_string(Image.fromarray(image), lang=language)

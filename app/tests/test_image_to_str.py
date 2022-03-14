@@ -1,18 +1,18 @@
 import json
 from pathlib import Path
 
-from PIL import Image
-
 from app.ocr_engine import OCREngine
-
-ocr_engine = OCREngine()
+from app.eval import evaluate_ocr
 
 with open(Path(__file__).parent / 'images/text.json', 'r') as f:
-    text_json = json.load(f)
+    test_json = json.load(f)
 
-for img_path, text in text_json.items():
+ocr_call = lambda x : OCREngine.get_text(x, "pol+eng")
 
-    with Image.open(img_path) as img:
-        print(ocr_engine.get_text(img, "pol").replace('\n', ' '))
-        print(text)
-        print('###########')
+scores = evaluate_ocr(ocr_call, test_json, silent = False)
+avg_ = 0
+for path, score in scores.items():
+    print(f' - {path:40} : {score:.3f}')
+    avg_ += score
+avg_ = avg_/len(scores)
+print(f'Average : {avg_:.3f}')
