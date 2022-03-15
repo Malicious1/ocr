@@ -7,7 +7,10 @@ RUN apt-get -y install tesseract-ocr-ukr
 RUN apt-get -y install tesseract-ocr-rus
 WORKDIR /code
 COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+COPY setup.py .
 COPY ./app /code/app
+COPY app/evaluation/images /code/images
+RUN pip install --upgrade -r /code/requirements.txt
+RUN pip install /code/
 RUN export TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata/
-CMD ["uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8000"]
+#CMD ["uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8000"]
