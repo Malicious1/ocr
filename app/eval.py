@@ -1,5 +1,6 @@
 # Evaluation module of OCR app
 from typing import Callable
+from pathlib import Path
 
 from PIL import Image
 
@@ -25,7 +26,8 @@ def jaccard_similarity(tokens1 : list, tokens2 : list) -> float:
 def evaluate_ocr(ocr : Callable, evaluation_data : dict,
                  metric : Callable[[list, list], float] = jaccard_similarity,
                  tokenizer: Callable[[str], list] = simple_tokenizer,
-                 silent = True) -> dict:
+                 silent = True,
+                 image_dir = ".") -> dict:
     """Perform evaluation of OCR according to the specified metric.
 
     Args:
@@ -34,13 +36,13 @@ def evaluate_ocr(ocr : Callable, evaluation_data : dict,
         metric (Callable[[list, list], float]) : function with metric score (needs to accept string tokens)
         tokenizer (Callable[[str], list]) : function that for str returns list of tokens
         silent (bool) flag that says whether output should be printed for individual scores
-
+        image_dir (str) directory with images
     Returns:
         dict : dictionary with scores for images
     """
     scores = {}
     for img_path, text in evaluation_data.items():
-        with Image.open(img_path) as img:
+        with Image.open(Path(image_dir) / img_path) as img:
             ocr_text = ocr(img)
         ocr_tokens = tokenizer(ocr_text)
         ref_tokens = tokenizer(text)
@@ -53,4 +55,3 @@ def evaluate_ocr(ocr : Callable, evaluation_data : dict,
             print('Score :: ', sc_)
             print('_' * 10)
     return scores
-

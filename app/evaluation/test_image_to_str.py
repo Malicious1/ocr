@@ -9,7 +9,8 @@ with open(Path(__file__).parent / 'images/text.json', 'r') as f:
 
 ocr_call = lambda x : OCREngine.get_text(x, "pol+eng")
 
-scores = evaluate_ocr(ocr_call, test_json, silent = False)
+scores = evaluate_ocr(ocr_call, test_json, silent = False, image_dir = 'images/')
+
 avg_ = 0
 for path, score in scores.items():
     print(f' - {path:40} : {score:.3f}')

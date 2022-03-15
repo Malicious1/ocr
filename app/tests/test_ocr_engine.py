@@ -9,6 +9,6 @@ def test_ocr():
         test_json = json.load(f)
     image_paths = [k for k,v in list(test_json.items())[:3]]
     for impath in image_paths:
-        with Image.open(Path('/code/') / impath) as img:
+        with Image.open(Path(ABS_PATH_TO_IMAGES) / impath) as img:
             res = OCREngine.get_text(img, 'pol+eng')
         assert type(res) == str
