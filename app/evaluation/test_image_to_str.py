@@ -7,7 +7,7 @@ from app.eval import evaluate_ocr
 with open(Path(__file__).parent / 'images/text.json', 'r') as f:
     test_json = json.load(f)
 
-ocr_call = lambda x : OCREngine.get_text(x, "pol+eng")
+ocr_call = lambda x : OCREngine.get_text(x, "pol+eng+rus+ukr")
 
 scores = evaluate_ocr(ocr_call, test_json, silent = False, image_dir = 'images/')
 
