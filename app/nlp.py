@@ -1,13 +1,15 @@
 # NLP module of OCR app
-import re
 import string
 import simplemma
+from typing import List
+
 
 def remove_non_alphanum(text : str) -> str:
-    "remove non alphanumeric characters from a string"
+    """remove non alphanumeric characters from a string"""
     return text.translate(str.maketrans('', '', string.punctuation))
 
-def simple_tokenizer(text : str, languages = ['pl', 'en', 'ru', 'uk']) -> list:
+
+def simple_tokenizer(text : str, languages: List[str] = None) -> list:
     """Simple tokenizer
 
     Args:
@@ -17,6 +19,8 @@ def simple_tokenizer(text : str, languages = ['pl', 'en', 'ru', 'uk']) -> list:
     Returns:
         list: list of str tokens
     """
+    if languages is None:
+        languages = ['pl', 'en', 'ru', 'uk']
     langdata = simplemma.load_data(*languages)
     text = text.replace('\n', ' ')
     text = text.strip()

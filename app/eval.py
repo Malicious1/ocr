@@ -1,12 +1,11 @@
 # Evaluation module of OCR app
 from typing import Callable
 from pathlib import Path
-
 from PIL import Image
-
 from .nlp import simple_tokenizer
 
-def jaccard_similarity(tokens1 : list, tokens2 : list) -> float:
+
+def jaccard_similarity(tokens1: list, tokens2: list) -> float:
     """Jaccard similarity score.
     More: https://en.wikipedia.org/wiki/Jaccard_index
 
@@ -23,11 +22,11 @@ def jaccard_similarity(tokens1 : list, tokens2 : list) -> float:
     return float(len(c)) / (len(a) + len(b) - len(c))
 
 
-def evaluate_ocr(ocr : Callable, evaluation_data : dict,
-                 metric : Callable[[list, list], float] = jaccard_similarity,
+def evaluate_ocr(ocr: Callable, evaluation_data: dict,
+                 metric: Callable[[list, list], float] = jaccard_similarity,
                  tokenizer: Callable[[str], list] = simple_tokenizer,
-                 silent = True,
-                 image_dir = ".") -> dict:
+                 silent=True,
+                 image_dir=".") -> dict:
     """Perform evaluation of OCR according to the specified metric.
 
     Args:
