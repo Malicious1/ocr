@@ -1,0 +1,36 @@
+{
+  "title": "Annotation",
+  "type": "object",
+  "required": [
+    "file_name",
+    "language",
+    "text"
+  ],
+  "properties": {
+    "file_name": {
+      "type": "string",
+      "description": "Image file name",
+      "minLength": 4,
+      "default": "image.png"
+    },
+    "language": {
+      "type": "string",
+      "description": "3 letter abbreviation of a language",
+      "enum": [
+        "pol",
+        "eng",
+        "rus",
+        "ukr"
+      ],
+      "minLength": 3,
+      "maxLength": 3,
+      "default": "pol"
+    },
+    "text": {
+      "type": "string",
+      "description": "Text in the image",
+      "minLength": 1,
+      "default": "Vladimir has a cat"
+    }
+  }
+}
