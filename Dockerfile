@@ -16,7 +16,9 @@ COPY setup.py .
 RUN pip install --upgrade -r /code/requirements.txt
 
 COPY ./app /code/app
-COPY ./app/evaluation/images /code/images
+COPY ./evaluation /code/evaluation
+COPY ./resources /code/resources
+COPY ./tests /code/tests
 
 RUN pip install /code/
 RUN export TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata/
