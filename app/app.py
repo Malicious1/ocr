@@ -1,12 +1,12 @@
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.responses import RedirectResponse
-from pytesseract import TesseractError
 from PIL import Image
 import base64
 import io
 
 from app.ocr_engine import OCREngine
 from app.rest_models import OCRRequest, OCRResponse, LanguagesResponse, OCRFileTestResponse
+from app.exceptions import InvalidLanguageError
 
 
 app = FastAPI(title="OCRApp")
@@ -26,12 +26,9 @@ def ocr(request: OCRRequest):
     image = Image.open(image_bytes)
     try:
         text = ocr_engine.get_text(image, request.language)
-    except TesseractError as e:
-        if e.status == 1:
-            languages = str(ocr_engine.get_languages())
-            raise HTTPException(status_code=404, detail="Invalid language. Available languages: " + languages)
-        else:
-            raise e
+    except InvalidLanguageError:
+        raise HTTPException(
+            status_code=404, detail="Invalid language. Available languages: " + str(ocr_engine.available_languages))
     return OCRResponse(id=request.id, text=text)
 
 
@@ -46,4 +43,4 @@ def ocr_test_file(file: UploadFile):
 
 @app.get("/languages", response_model=LanguagesResponse)
 def get_languages():
-    return LanguagesResponse(languages=ocr_engine.get_languages())
+    return LanguagesResponse(languages=ocr_engine.available_languages)
