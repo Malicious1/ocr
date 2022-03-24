@@ -8,18 +8,22 @@ RUN apt-get update && apt-get install -y \
     tesseract-ocr-ukr \
     tesseract-ocr-rus
 
-WORKDIR /code
+ARG USER_NAME="user"
+RUN useradd -ms /bin/bash $USER_NAME
+USER $USER_NAME
+
+WORKDIR /home/$USER_NAME
 
 COPY requirements.txt .
 COPY setup.py .
 
-RUN pip install --upgrade -r /code/requirements.txt
+RUN pip install --upgrade -r ./requirements.txt
 
-COPY ./app /code/app
-COPY ./evaluation /code/evaluation
-COPY ./resources /code/resources
-COPY ./tests /code/tests
+COPY ./app ./app
+COPY ./evaluation ./evaluation
+COPY ./resources ./resources
+COPY ./tests ./tests
 
-RUN pip install /code/
+RUN pip install .
 RUN export TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata/
 #CMD ["uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8000"]
