@@ -68,7 +68,7 @@ class TestExecutor:
 
     def save_test_report(self, report: TestReport):
         with open(self.results_path, "a") as f:
-            f.write(report.json())
+            f.write(report.json()+"\n")
 
     def evaluate_sample(self, annotation: Annotation) -> SampleEvaluationResults:
         image = self.read_image(annotation.file_name)
