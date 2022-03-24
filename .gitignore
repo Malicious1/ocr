@@ -1,6 +1,6 @@
 # preprocessed images and evaluation reports
-resources/evaluation_reports
-resources/preprocessed_images
+resources/evaluation_reports/*
+resources/preprocessed_images/*
 
 # idea
 .idea
