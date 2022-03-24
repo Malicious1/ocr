@@ -28,8 +28,7 @@ class OCREngine:
             raise InvalidLanguageError("Available languages declaration inconsistent with Tesseract models")
 
     def get_text(self, image: Image, languages: str = None) -> str:
-        if languages is None:
-            languages = "+".join(self.available_languages)
+        languages = "+".join(self.available_languages) if languages is None else languages
         if not set(languages.split("+")).issubset(set(self.available_languages)):
             raise InvalidLanguageError(
                 "Requested languages not available, available languages: %s", str(self.available_languages))
