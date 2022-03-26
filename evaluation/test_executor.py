@@ -8,6 +8,7 @@ import io
 from app.ocr_engine import OCREngine
 from evaluation.evaluator import Evaluator, MetricResult
 from evaluation.metrics import BuiltInMatcher, JaccardSimilarity
+from app.language import AvailableLanguages
 
 
 class Annotation(BaseModel):
@@ -40,14 +41,14 @@ class TestReport(BaseModel):
 
 class TestExecutor:
 
-    def __init__(self, images_path: Path, annotations_path: Path, results_path: Path = None,
+    def __init__(self, ocr_engine: OCREngine, images_path: Path, annotations_path: Path, results_path: Path = None,
                  preprocessd_images_path: Path = None, evaluator: Evaluator = None, postprocess_expected: bool = True,
                  silent: bool = False):
         self.images_path = images_path
         self.annotations_path = annotations_path
         self.results_path = results_path
         self.preprocessed_images_path = preprocessd_images_path
-        self.ocr_engine = OCREngine()
+        self.ocr_engine = ocr_engine
         self.silent = silent
         self.postprocess_expected = postprocess_expected
         self.evaluator = Evaluator(metrics=[JaccardSimilarity(), BuiltInMatcher()]) if evaluator is None else evaluator
@@ -72,7 +73,7 @@ class TestExecutor:
 
     def evaluate_sample(self, annotation: Annotation) -> SampleEvaluationResults:
         image = self.read_image(annotation.file_name)
-        text = self.ocr_engine.get_text(image, annotation.language)
+        text = self.ocr_engine.get_text(image, AvailableLanguages().get_langs([annotation.language]))
         if self.postprocess_expected:
             annotation.text = self.ocr_engine.postprocess_text(annotation.text)
         if self.preprocessed_images_path is not None:
