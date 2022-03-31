@@ -4,6 +4,7 @@ from pytesseract import pytesseract
 from easyocr import Reader
 from typing import List
 import numpy as np
+import cv2
 
 from app.language import AvailableLanguages, Script, Language
 from app.exceptions import InvalidLanguageError
@@ -19,17 +20,30 @@ class OCRBackend(metaclass=ABCMeta):
         """Backend name"""
 
     @abstractmethod
+    def preprocess_image(self, image: Image) -> Image:
+        """Backend dependent image preprocessing"""
+
+    def _get_text(self, image: Image, language: List[Language]) -> str:
+        """OCR library logic goes here"""
+
     def get_text(self, image: Image, languages: List[Language]) -> str:
-        """3rd party OCR libs go here"""
+        image = self.preprocess_image(image)
+        return self._get_text(image, languages)
 
 
 class TesseractBackend(OCRBackend):
 
-    @property
-    def name(self) -> str:
-        return "tesseract"
+    name = "tesseract"
 
-    def get_text(self, image: Image, languages: List[Language]) -> str:
+    def preprocess_image(self, image: Image):
+        image = np.array(image)
+        image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
+        image = cv2.bilateralFilter(image, 7, 55, 60)
+        _, image = cv2.threshold(src=image, thresh=225, maxval=255, type=cv2.THRESH_BINARY)
+        image = Image.fromarray(image)
+        return image
+
+    def _get_text(self, image: Image, languages: List[Language]) -> str:
         return pytesseract.image_to_string(image=image, lang="+".join([l.abbr_3 for l in languages]))
 
 
@@ -39,11 +53,12 @@ class EasyOCRBackend(OCRBackend):
         self._cyrillic_reader: Reader = Reader([l.abbr_2 for l in AvailableLanguages().langs_cyrillic], gpu=use_gpu)
         self._latin_reader: Reader = Reader([l.abbr_2 for l in AvailableLanguages().langs_latin], gpu=use_gpu)
 
-    @property
-    def name(self) -> str:
-        return "easy_ocr"
+    name = "easy_ocr"
 
-    def get_text(self, image: Image, languages: List[Language]) -> str:
+    def preprocess_image(self, image: Image):
+        return image
+
+    def _get_text(self, image: Image, languages: List[Language]) -> str:
         image = np.array(image)
         if all([l.script == Script.cyrillic for l in languages]):
             return " ".join(self._cyrillic_reader.readtext(image, detail=0))
@@ -59,4 +74,3 @@ class EasyOCRBackend(OCRBackend):
                 width_ths=1))
         else:
             raise InvalidLanguageError("Not possible to mix both cyrillic and latin scripts with EasyOCR")
-
