@@ -28,8 +28,8 @@ class JaccardSimilarity(Metric):
         More: https://en.wikipedia.org/wiki/Jaccard_index
 
         Args:
-            expected (list): reference list with str tokens
-            predicted (list): target list with str tokens
+            expected (str): reference list with str tokens
+            predicted (str): target list with str tokens
 
         Returns:
             float: Jaccard score value
