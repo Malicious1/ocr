@@ -1,12 +1,13 @@
-from evaluation.test_executor import EvaluationExecutor
+from evaluation.evaluation_executor import EvaluationExecutor
 from app.ocr_engine import OCREngine
 from app.ocr_backend import TesseractBackend, EasyOCRBackend
 import argparse
 from pathlib import Path
 
-# TODO: add parametrization of OCRBackend
 
 if __name__ == "__main__":
+
+    ocr_backends = {b.name: b for b in [EasyOCRBackend, TesseractBackend]}
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--silent", help="Do not print results", action='store_true')
@@ -15,6 +16,9 @@ if __name__ == "__main__":
     parser.add_argument("--images_path", help="path to directory with images", type=Path)
     parser.add_argument("--results_path", help="path to jsonlines file where test report should be saved", type=Path)
     parser.add_argument("--preprocessed_images_path", help="path to directory to save pre-processed images", type=Path)
+    parser.add_argument("--ocr-backend", help="Available backends: %s" % str([b for b in ocr_backends.keys()]),
+                        default=EasyOCRBackend.name)
+
     args = parser.parse_args()
 
     if args.images_path is None or args.annotations_path is None:
@@ -30,5 +34,5 @@ if __name__ == "__main__":
         preprocessd_images_path=args.preprocessed_images_path,
         silent=args.silent,
         postprocess_expected=args.postprocess_expected,
-        ocr_engine=OCREngine(EasyOCRBackend()))
+        ocr_engine=OCREngine(ocr_backends[args.ocr_backend]()))
     results = runner.run_test()
