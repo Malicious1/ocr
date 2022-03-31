@@ -1,8 +1,10 @@
 from evaluation.test_executor import TestExecutor
+from app.ocr_engine import OCREngine
+from app.ocr_backend import TesseractBackend, EasyOCRBackend
 import argparse
 from pathlib import Path
 
-# TODO: add storing results to file, remember about docker volume
+# TODO: add parametrization of OCRBackend
 
 if __name__ == "__main__":
 
@@ -27,6 +29,6 @@ if __name__ == "__main__":
         results_path=args.results_path,
         preprocessd_images_path=args.preprocessed_images_path,
         silent=args.silent,
-        postprocess_expected=args.postprocess_expected
-    )
+        postprocess_expected=args.postprocess_expected,
+        ocr_engine=OCREngine(EasyOCRBackend()))
     results = runner.run_test()
