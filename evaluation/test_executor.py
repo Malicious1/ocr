@@ -39,7 +39,7 @@ class TestReport(BaseModel):
     summary: List[MetricResult]
 
 
-class TestExecutor:
+class EvaluationExecutor:
 
     def __init__(self, ocr_engine: OCREngine, images_path: Path, annotations_path: Path, results_path: Path = None,
                  preprocessd_images_path: Path = None, evaluator: Evaluator = None, postprocess_expected: bool = True,

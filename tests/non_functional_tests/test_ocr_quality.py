@@ -1,4 +1,4 @@
-from evaluation.test_executor import TestExecutor
+from evaluation.test_executor import EvaluationExecutor
 from app.ocr_engine import OCREngine
 from app.ocr_backend import TesseractBackend, EasyOCRBackend
 import argparse
@@ -23,7 +23,7 @@ if __name__ == "__main__":
         args.annotations_path = dataset_path / "annotations.jsonlines"
         args.images_path = dataset_path / "images"
 
-    runner = TestExecutor(
+    runner = EvaluationExecutor(
         annotations_path=args.annotations_path,
         images_path=args.images_path,
         results_path=args.results_path,
