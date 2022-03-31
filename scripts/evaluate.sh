@@ -1,2 +1,2 @@
 docker build . -t ocr
-docker run -t ocr bash -c "python app/evaluation/test_image_to_str.py"
+docker run -t ocr bash -c "python tests/non_functional_tests/test_ocr_quality.py --postprocess_expected"

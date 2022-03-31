@@ -4,6 +4,6 @@ import setuptools
 
 setuptools.setup(name='app', version='1.0',
                  packages= setuptools.find_packages(
-                     include=["app", "app*"]
+                     include=["app", "app*", "evaluation"]
                  ),
                  include_package_data=True,)

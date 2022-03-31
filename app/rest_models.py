@@ -4,7 +4,7 @@ from typing import List
 
 class OCRRequest(BaseModel):
     id: str = Field(title="External ID. For tracking. Response will be returned with the same ID")
-    language: str = Field("pol", title="Language of OCR, see /languages for available languages")
+    language: str = Field("pol", title="Languages of OCR concatenated by '+' see /languages for available languages")
     image: bytes = Field(title="Base64 encoded image string")
 
 
