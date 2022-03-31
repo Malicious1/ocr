@@ -42,7 +42,7 @@ def ocr_test_file(file: UploadFile):
     image_bytes = file.file.read()
     image_bytes = io.BytesIO(image_bytes)
     image = Image.open(image_bytes)
-    text = ocr_engine.get_text(image, languages.polish)
+    text = ocr_engine.get_text(image, [languages.polish])
     return OCRFileTestResponse(text=text)
 
 

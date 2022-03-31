@@ -1,8 +1,6 @@
 FROM pytorch/pytorch
 
-ARG gh_username=JaidedAI
-ARG language_models_latin="['pl','en']"
-ARG language_models_cyrillic="['uk', 'ru']"
+# ----------------------------------------------- Install system dependencies ------------------------------------------
 
 RUN apt-get update && apt-get install -y \
     libsm6  \
@@ -21,32 +19,43 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/li
 
+# --------------------------------------------------- Create dedicated user --------------------------------------------
+
 ARG USER_NAME="user"
 RUN useradd -ms /bin/bash $USER_NAME
+WORKDIR /home/$USER_NAME
 USER $USER_NAME
 
-WORKDIR /home/$USER_NAME
+# ------------------------------------------------------ Install Easy OCR  ---------------------------------------------
 
-RUN git clone "https://github.com/$gh_username/EasyOCR.git" \
+# Add LMs here, english goes well with any script
+ARG LANGUAGE_MODELS_LATIN="['pl','en']"
+ARG LANGUAGE_MODELS_CYRILLIC="['uk', 'ru', 'en']"
+
+RUN git clone "https://github.com/JaidedAI/EasyOCR.git" \
     && cd EasyOCR \
     && git remote add upstream "https://github.com/JaidedAI/EasyOCR.git" \
     && git pull upstream master
 
-RUN pwd
-RUN ls
 # Build C extensions and pandas
 RUN cd EasyOCR \
     && python setup.py build_ext --inplace -j 4 \
     && python -m pip install -e .
 
-# Downloads models into container stored inside the ~/.EasyOCR/model directory'
-# >> Also implicitly checks no errors on import
-RUN python -c "import easyocr; reader = easyocr.Reader(${language_models_latin}, gpu=False)"
-RUN python -c "import easyocr; reader = easyocr.Reader(${language_models_cyrillic}, gpu=False)"
+# ----------------------------------------------- Collect language models ----------------------------------------------
+
+
+RUN python -c "import easyocr; reader = easyocr.Reader(${LANGUAGE_MODELS_LATIN}, gpu=False)"
+RUN python -c "import easyocr; reader = easyocr.Reader(${LANGUAGE_MODELS_CYRILLIC}, gpu=False)"
+RUN export TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata/
+
+# --------------------------------------------------- Install project --------------------------------------------------
 
 COPY requirements.txt .
 COPY setup.py .
 
+# Change to root so that scripts are in global
+USER root
 RUN pip install --upgrade -r ./requirements.txt
 
 COPY ./app ./app
@@ -55,5 +64,7 @@ COPY ./resources ./resources
 COPY ./tests ./tests
 
 RUN pip install .
-RUN export TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata/
+
+USER $USER_NAME
+#
 #CMD ["uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8000"]
