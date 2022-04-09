@@ -37,9 +37,11 @@ class TesseractBackend(OCRBackend):
 
     def preprocess_image(self, image: Image):
         image = np.array(image)
+        # rescale should improve OCR quality
+        image = cv2.resize(image, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
         image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
         image = cv2.bilateralFilter(image, 7, 55, 60)
-        _, image = cv2.threshold(src=image, thresh=225, maxval=255, type=cv2.THRESH_BINARY)
+        _, image = cv2.threshold(src=image, thresh=180, maxval=255, type=cv2.THRESH_BINARY)
         image = Image.fromarray(image)
         return image
 
